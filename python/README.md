@@ -5,6 +5,10 @@ This is a minimal app that implements Deck using a Flask/Python backend with a b
 ## TL;DR
 
 ```bash
+# Tunnel to your local server
+npm install -g tunnelmole
+tmole 8080 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
+
 # Install dependencies
 pip install -r requirements.txt
 
