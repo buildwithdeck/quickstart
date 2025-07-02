@@ -11,9 +11,23 @@ It demonstrates how to set up a webhook, obtain an access token using the Deck W
 This app uses the latest stable version of Node. At the time of writing, the latest stable version is v18.18.0. It's recommended you use this version of Node to run the app. For information on installing Node, see [How to install Node.js](https://nodejs.dev/learn/how-to-install-nodejs).
 
 
-Fill out the contents of the **.env** file with the [client ID and Sandbox secret in your Deck dashboard](https://app.deck.co). Use the **Sandbox** secret when setting the `DECK_SECRET` variable.
+Fill out the contents of the **.env** file with the [client ID and Sandbox secret in your Deck dashboard](https://dashboard.deck.co/). Use the **Sandbox** secret when setting the `DECK_SECRET` variable.
 
 ```bash
 cp .env.example .env
 pnpm run start #  http://127.0.0.1:8080
 ```
+
+# Webhook
+
+To receive data from Deck, set up a public webhook URL in your Deck dashboard. 
+
+1. Create a tunnel to your local server using [tunnelmole](https://tunnelmole.com).
+2. Set the webhook URL in [Dashboard](https://dashboard.deck.co/). e.g., `https://your-tunnel-url.com/api/webhook`
+
+```
+npm install -g tunnelmole
+tmole 8080
+```
+
+Events sent to the webhook will be logged in the console. You can use this to test your webhook setup.

@@ -1,12 +1,12 @@
 (function linkSdkIIFE(context) {
   const server = {
-    _api: "http://127.0.0.1:8080",
+    _api: "", // localhost
     _headers: {
       "Content-Type": "application/json",
     },
 
     async createToken() {
-      const response = await fetch(`${this._api}/api/create_link_token`, {
+      const response = await fetch(`${this._api}api/create_link_token`, {
         method: "POST",
         headers: this._headers,
       });
@@ -46,7 +46,7 @@
         logEvent("onError()");
         button.disabled = false;
       },
-      async onSuccess({ public_token }) {
+      async onSuccess() {
         logEvent("onSuccess()");
         button.disabled = false;
       },

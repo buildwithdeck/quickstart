@@ -1,5 +1,6 @@
 /*
  * Quickstart API:
+ * /ensure-connection - Submits an EnsureConnection job to Deck
  * /api/create_link_token - Creates a link token for the Deck widget
  * /api/webhook - Receives webhook events from Deck
  */
@@ -26,6 +27,11 @@ const serveFile = (path) => (req, res) =>
 app.get("/", serveFile("index.html"));
 app.get("/index.js", serveFile("index.js"));
 
+// Serve API
+app.get("/ensure-connection", async (req, res) => {
+  await deck.ensureConnection()
+  res.send("EnsureConnection triggered. Check your webhook logs.");
+})
 app.post("/api/create_link_token", async (req, res) =>
   res.json(await deck.createWidgetToken())
 );
