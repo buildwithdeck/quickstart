@@ -22,6 +22,20 @@ python src/server.py
 
 Then visit http://127.0.0.1:8080 in your browser.
 
+# Webhook
+
+To receive data from Deck, set up a public webhook URL in your Deck dashboard. 
+
+1. Create a tunnel to your local server using [tunnelmole](https://tunnelmole.com).
+2. Set the webhook URL in [Dashboard](https://dashboard.deck.co/). e.g., `https://your-tunnel-url.com/api/webhook`
+
+```
+npm install -g tunnelmole
+tmole 8080
+```
+
+Events sent to the webhook will be logged in the console. You can use this to test your webhook setup.
+
 ## Setup and Installation
 
 ### Prerequisites
