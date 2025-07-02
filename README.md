@@ -1,13 +1,13 @@
 # Deck Quickstart
 
-Welcome to [Deck](https://deck.co)'s Quickstart! This repo contains folders: **nodejs/**. 
+Welcome to [Deck](https://deck.co)'s Quickstart! This repo contains two folders: **nodejs/** and **python/**.
 
 Each folder contains a minimal full-stack app that does the following: 
 1. Set up your webhook 
 2. Obtain an access token using the Deck Widget
 3. Obtain user-permissioned data from the Deck API
 
-To get started, clone the repository, `cd` into one the folder, and follow the instructions in the corresponding **README**. Enjoy! 
+To get started, clone the repository, `cd` into one of the folders, and follow the instructions in the corresponding **README**. Enjoy! 
 
 ```
 git clone https://github.com/datadeckapi/quickstart.git && cd ./quickstart
