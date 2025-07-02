@@ -1,0 +1,19 @@
+# [Deck](https://deck.co) Quickstart (NodeJS)
+
+This is a minimal app that implements Deck using **HTML/vanilla JS frontend** with an **Express/Node backend**.
+
+It demonstrates how to set up a webhook, obtain an access token using the Deck Widget, and fetch user-permissioned data from the Deck API.
+
+![Screenshot of the app](https://i.imgur.com/UBDKovj.png)
+
+# Running the app
+
+This app uses the latest stable version of Node. At the time of writing, the latest stable version is v18.18.0. It's recommended you use this version of Node to run the app. For information on installing Node, see [How to install Node.js](https://nodejs.dev/learn/how-to-install-nodejs).
+
+
+Fill out the contents of the **.env** file with the [client ID and Sandbox secret in your Deck dashboard](https://app.deck.co). Use the **Sandbox** secret when setting the `DECK_SECRET` variable.
+
+```bash
+cp .env.example .env
+pnpm run start #  http://127.0.0.1:8080
+```
