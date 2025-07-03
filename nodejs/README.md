@@ -19,18 +19,6 @@ pnpm install
 pnpm run start # http://127.0.0.1:8080
 ```
 
-# Running the app
-
-It is recommended to use latest stable version of Node. At the time of writing, the latest stable version is v22.16.0. 
-For information on installing Node, see [How to install Node.js](https://nodejs.dev/learn/how-to-install-nodejs).
-
-Fill out the contents of the **.env** file with the [client ID and Sandbox secret in your Deck dashboard](https://dashboard.deck.co/). Use the **Sandbox** secret when setting the `DECK_SECRET` variable.
-
-```bash
-cp .env.example .env
-pnpm run start #  http://127.0.0.1:8080
-```
-
 # Webhook
 
 To receive data from Deck, set up a public webhook URL in your Deck dashboard. 
@@ -44,3 +32,15 @@ tmole 8080
 ```
 
 Events sent to the webhook will be logged in the console. You can use this to test your webhook setup.
+
+# Running the app
+
+It is recommended to use latest stable version of Node. At the time of writing, the latest stable version is v22.16.0. 
+For information on installing Node, see [How to install Node.js](https://nodejs.dev/learn/how-to-install-nodejs).
+
+Fill out the contents of the **.env** file with the [client ID and Sandbox secret in your Deck dashboard](https://dashboard.deck.co/). Use the **Sandbox** secret when setting the `DECK_SECRET` variable.
+
+```bash
+cp .env.example .env
+pnpm run start #  http://127.0.0.1:8080
+```
