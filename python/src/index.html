@@ -28,12 +28,22 @@
         <h1><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="64"> Deck Quickstart</h1>
         <p>
           This is a minimal app that implements Deck using a very basic HTML/vanilla JS frontend with a Flask/Python
-          backend. After linking a sample account, Deck will trigger your configured webhook URL with a sample
-          payload.
+          backend.
         </p>
       </hgroup>
+      
+      <p>1. Click "Link Account" and go through the widget. This will submit an access token to your webhook.</p>
 
-      <button class="btn-demo" onClick="startLink(event)">Link Account</button>
+      <p><button class="btn-demo" onClick="startLink(event)">Link Account</button></p>
+      <p>2. Confirm in your application logs that an access token was received. </p>
+
+      <pre>
+
+  ✓ Updated database:  { access_token: '&lt;access_token&gt;' }
+      </pre>
+        
+      <p>3. Click "Fetch Payment Methods" to retrieve the payment methods associated with the linked account.</p>
+      <a role="button" href="/api/fetch_payment_methods" class="outline" target="_blank">Fetch Payment Methods</a>
 
       <pre class="js-events"></pre>
     </main>

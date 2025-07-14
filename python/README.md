@@ -5,9 +5,6 @@ This is a minimal app that implements Deck using a Flask/Python backend with a b
 ## TL;DR
 
 ```bash
-# Tunnel to your local server
-npm install -g tunnelmole
-tmole 8080 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
 
 # Install dependencies
 pip install -r requirements.txt
@@ -18,6 +15,10 @@ cp .env.example .env
 
 # Run the server
 python src/server.py
+
+# Tunnel to your local server
+npm install -g tunnelmole
+tmole 8080 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
 ```
 
 Then visit http://127.0.0.1:8080 in your browser.
@@ -82,22 +83,23 @@ This quickstart demonstrates how to:
 1. Create a link token for the Deck widget
 2. Initialize the Deck Link SDK in a browser
 3. Handle events from the Deck Link SDK
-4. Submit an EnsureConnection job
-5. Handle webhook events
+4. Handle webhook events and persist access tokens
+5. Use access tokens to fetch payment methods
 
 ## Key Files
 
 - `src/server.py` - Flask server that handles API requests
 - `src/deck.py` - Python client for the Deck API
+- `src/webhook.py` - Webhook handler for processing Deck events
 - `src/index.html` - HTML frontend
 - `src/index.js` - JavaScript for the frontend
 
 ## API Endpoints
 
 - `/` - Serves the frontend
-- `/ensure-connection` - Submits an EnsureConnection job to Deck
 - `/api/create_link_token` - Creates a link token for the Deck widget
 - `/api/webhook` - Receives webhook events from Deck
+- `/api/fetch_payment_methods` - Use access token to get payment methods
 
 ## Example Usage
 
@@ -117,20 +119,29 @@ deck_client = Deck()
 token = await deck_client.create_widget_token()
 ```
 
-### Ensure a connection
+### Submit a job to Deck
 
 ```python
-# Submit an EnsureConnection job
-response = await deck_client.ensure_connection()
+# Submit any job to Deck
+response = await deck_client.submit_job("FetchPaymentMethods", {"access_token": "your_access_token"})
 ```
 
 ### Handling webhook events
 
 ```python
+from webhook import webhook_handler
+
 @app.route('/api/webhook', methods=['POST'])
 def webhook():
-    # Process the webhook event
-    event_data = request.json
-    print("Webhook received:", event_data)
-    return "Webhook received", 200
+    data = request.json
+    response = webhook_handler.handle_webhook(data)
+    return response, 200
+```
+
+### Accessing stored data
+
+```python
+# Access stored data from webhooks
+access_token = webhook_handler.database.get("access_token")
+payment_methods = webhook_handler.database.get("payment_methods")
 ```

@@ -60,15 +60,11 @@ class Deck:
         """Create a link token for the Deck widget."""
         return self._post("link/token/create")
     
-    def ensure_connection(self) -> Dict[str, Any]:
-        """Submit an EnsureConnection job to Deck."""
+    def submit_job(self, job_code: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Submit a job to Deck."""
         return self._post("jobs/submit", {
-            "job_code": "EnsureConnection",
-            "input": {
-                "password": "password",
-                "username": "username",
-                "source_guid": "a47c74e8-ae4a-425e-8583-922d5515654a"  # Youtube
-            }
+            "job_code": job_code,
+            "input": input_data
         })
 
 # Create a singleton instance
