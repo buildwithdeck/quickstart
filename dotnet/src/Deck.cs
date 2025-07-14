@@ -91,17 +91,12 @@ namespace DeckQuickstart
             return PostAsync<JsonElement>("link/token/create");
         }
 
-        public Task<JsonElement> EnsureConnection()
+        public Task<JsonElement> SubmitJob(string jobCode, object input)
         {
             var payload = new
             {
-                job_code = "EnsureConnection",
-                input = new
-                {
-                    password = "password",
-                    username = "username",
-                    source_guid = "a47c74e8-ae4a-425e-8583-922d5515654a" // Youtube
-                }
+                job_code = jobCode,
+                input = input
             };
 
             return PostAsync<JsonElement>("jobs/submit", payload);

@@ -5,9 +5,6 @@ This is a minimal app that implements Deck using an ASP.NET Core backend with a 
 ## TL;DR
 
 ```bash
-npm install -g tunnelmole
-tmole 5000 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
-
 # Navigate to the project directory
 cd src
 
@@ -17,9 +14,12 @@ cp .env.example .env
 
 # Run the application
 dotnet run
+
+npm install -g tunnelmole
+tmole 8080 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
 ```
 
-Then visit http://localhost:5000 in your browser.
+Then visit http://localhost:8080 in your browser.
 
 # Webhook
 
@@ -30,7 +30,7 @@ To receive data from Deck, set up a public webhook URL in your Deck dashboard.
 
 ```
 npm install -g tunnelmole
-tmole 5000
+tmole 8080
 ```
 
 Events sent to the webhook will be logged in the console. You can use this to test your webhook setup.
@@ -42,22 +42,23 @@ This quickstart demonstrates how to:
 1. Create a link token for the Deck widget
 2. Initialize the Deck Link SDK in a browser
 3. Handle events from the Deck Link SDK
-4. Submit an EnsureConnection job
-5. Handle webhook events
+4. Handle webhook events and persist access tokens
+5. Use access tokens to fetch payment methods
 
 ## Key Files
 
 - `Program.cs` - ASP.NET Core web application that handles API requests
 - `Deck.cs` - .NET client for the Deck API
+- `WebhookHandler.cs` - Webhook handler for processing Deck events
 - `wwwroot/index.html` - HTML frontend
 - `wwwroot/index.js` - JavaScript for the frontend
 
 ## API Endpoints
 
 - `/` - Serves the frontend
-- `/ensure-connection` - Submits an EnsureConnection job to Deck
 - `/api/create_link_token` - Creates a link token for the Deck widget
 - `/api/webhook` - Receives webhook events from Deck
+- `/api/fetch_payment_methods` - Use access token to get payment methods
 
 ## Example Usage
 
@@ -84,19 +85,54 @@ public class MyController : ControllerBase
 var token = await _deckClient.CreateWidgetToken();
 ```
 
+### Submit a job to Deck
+
+```csharp
+// Submit any job to Deck
+var response = await _deckClient.SubmitJob("FetchPaymentMethods", new { access_token = "your_access_token" });
+```
+
 ### Handling webhook events
 
 ```csharp
 // In Program.cs
-app.MapPost("/api/webhook", (HttpContext context, ILogger<Program> logger) =>
+app.MapPost("/api/webhook", async (HttpContext context, WebhookHandler webhookHandler, ILogger<Program> logger) =>
 {
-    // Process the webhook event
-    using var reader = new StreamReader(context.Request.Body);
-    var body = reader.ReadToEndAsync().Result;
-    logger.LogInformation("Webhook received: {Body}", body);
-    
-    return "Webhook received";
+    try
+    {
+        // Read and parse the request body
+        context.Request.EnableBuffering();
+        using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        context.Request.Body.Position = 0;
+        
+        var requestData = JsonSerializer.Deserialize<JsonElement>(body);
+        var response = webhookHandler.HandleWebhook(requestData);
+        
+        return Results.Ok(response);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error processing webhook");
+        return Results.Problem("Error processing webhook: " + ex.Message);
+    }
 });
+```
+
+### Accessing stored data
+
+```csharp
+// Access stored data from webhooks
+if (webhookHandler.Database.TryGetValue("access_token", out var accessTokenObj) && 
+    accessTokenObj is string accessToken)
+{
+    // Use the access token
+}
+
+if (webhookHandler.Database.TryGetValue("payment_methods", out var paymentMethodsObj))
+{
+    // Access payment methods
+}
 ```
 
 ## Development
@@ -112,7 +148,7 @@ Environment variables can be set in the `.env` file in the root of the project:
 ```
 DECK_CLIENT_ID=your_client_id_here
 DECK_SECRET=your_secret_here
-PORT=5000
+PORT=8080
 ```
 
 ### Building

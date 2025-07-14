@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddSingleton<DeckClient>();
+builder.Services.AddSingleton<WebhookHandler>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -48,21 +49,6 @@ app.MapGet("/", () =>
 });
 
 // Quickstart API endpoints
-app.MapGet("/ensure-connection", async (HttpContext context, DeckClient deck, ILogger<Program> logger) =>
-{
-    try
-    {
-        await deck.EnsureConnection();
-        logger.LogInformation("EnsureConnection job submitted successfully");
-        return Results.Text("EnsureConnection triggered. Check your webhook logs.");
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Error submitting EnsureConnection job");
-        return Results.Problem("Error submitting EnsureConnection job: " + ex.Message);
-    }
-});
-
 app.MapPost("/api/create_link_token", async (HttpContext context, DeckClient deck, ILogger<Program> logger) =>
 {
     try
@@ -78,26 +64,46 @@ app.MapPost("/api/create_link_token", async (HttpContext context, DeckClient dec
     }
 });
 
-app.MapPost("/api/webhook", async (HttpContext context, ILogger<Program> logger) =>
+app.MapPost("/api/webhook", async (HttpContext context, WebhookHandler webhookHandler, ILogger<Program> logger) =>
 {
     try
     {
-        // Read and log the request body
+        // Read and parse the request body
         context.Request.EnableBuffering();
         using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
         var body = await reader.ReadToEndAsync();
-
-        // Reset the position to allow the body to be read again if needed
         context.Request.Body.Position = 0;
         
-        logger.LogInformation("Webhook received: {Body}", body);
+        var requestData = JsonSerializer.Deserialize<JsonElement>(body);
+        var response = webhookHandler.HandleWebhook(requestData);
         
-        return Results.Ok("Webhook received");
+        return Results.Ok(response);
     }
     catch (Exception ex)
     {
         logger.LogError(ex, "Error processing webhook");
         return Results.Problem("Error processing webhook: " + ex.Message);
+    }
+});
+
+app.MapGet("/api/fetch_payment_methods", async (HttpContext context, DeckClient deck, WebhookHandler webhookHandler, ILogger<Program> logger) =>
+{
+    try
+    {
+        if (!webhookHandler.Database.TryGetValue("access_token", out var accessTokenObj) || 
+            accessTokenObj is not string accessToken || 
+            string.IsNullOrEmpty(accessToken))
+        {
+            return Results.BadRequest("No access token found. Please link an account first.");
+        }
+
+        await deck.SubmitJob("FetchPaymentMethods", new { access_token = accessToken });
+        return Results.Text("FetchPaymentMethods triggered. Check your webhook logs for payment methods.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error fetching payment methods");
+        return Results.Problem("Error fetching payment methods: " + ex.Message);
     }
 });
 
