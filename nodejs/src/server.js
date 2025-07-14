@@ -1,14 +1,16 @@
 /*
  * Quickstart API:
- * /ensure-connection - Submits an EnsureConnection job to Deck
  * /api/create_link_token - Creates a link token for the Deck widget
  * /api/webhook - Receives webhook events from Deck
+ * /example/ensure-connection - Get an access token
+ * /example/fetch-payment-methods - Use access token to get payment methods
  */
 
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const { deck } = require("./deck");
+const { webhook } = require("./webhook");
 const app = express();
 
 app.use(
@@ -28,16 +30,16 @@ app.get("/", serveFile("index.html"));
 app.get("/index.js", serveFile("index.js"));
 
 // Serve API
-app.get("/ensure-connection", async (req, res) => {
-  await deck.ensureConnection()
-  res.send("EnsureConnection triggered. Check your webhook logs.");
-})
 app.post("/api/create_link_token", async (req, res) =>
   res.json(await deck.createWidgetToken())
 );
-app.post("/api/webhook", (req, res) => {
-  console.log("Webhook received:", req.body);
-  res.status(200).send("Webhook received");
+
+app.post("/api/webhook", webhook.handler);
+
+app.get("/api/fetch_payment_methods", async (req, res) => {
+  const { access_token } = webhook.database;
+  await deck.submitJob("FetchPaymentMethods", { access_token });
+  res.send("FetchPaymentMethods triggered. Check your webhook logs for payment methods.");
 });
 
 const PORT = process.env.PORT || 8080;

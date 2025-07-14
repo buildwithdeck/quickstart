@@ -7,16 +7,16 @@ It demonstrates how to set up a webhook, obtain an access token using the Deck W
 # TL;DR
 
 ```sh
-# Tunnel to your local server
-npm install -g tunnelmole
-tmole 8080 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
-
 # Fill out the .env file with your Deck credentials
 cp .env.example .env
 
 # Run the local server
 pnpm install
-pnpm run start # http://127.0.0.1:8080
+pnpm start # http://127.0.0.1:8080
+
+# Tunnel to your local server
+npm install -g tunnelmole
+tmole 8080 # Register https://your-tunnel-url.com/api/webhook in Deck dashboard
 ```
 
 # Webhook

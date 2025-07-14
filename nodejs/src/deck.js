@@ -12,21 +12,20 @@ export const deck = {
     });
     console.log("Deck API response:", response.status, response.statusText);
     if (!response.ok) {
-      throw new Error(`Deck API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Deck API error: ${response.status} ${response.statusText}`
+      );
     }
+
     return await response.json();
   },
   createWidgetToken() {
     return this._post("link/token/create");
   },
-  ensureConnection() {
+  submitJob(job_code, input) {
     return this._post("jobs/submit", {
-      job_code: "EnsureConnection",
-      input: {
-        password: "password",
-        username: "username",
-        source_guid: "a47c74e8-ae4a-425e-8583-922d5515654a" // Youtube
-      }
+      job_code,
+      input,
     });
   }
 };
